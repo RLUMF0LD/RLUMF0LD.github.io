@@ -5,47 +5,70 @@
   <title>Modules Index</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { background:#000; color:#fff; font-family:monospace; text-align:center; padding-top:10vh; }
-    h1 { letter-spacing:0.15em; margin-bottom:2rem; opacity:0.9; }
-    .group { margin:2rem 0; opacity:0.75; }
-    a { color:#888; text-decoration:none; font-size:1rem; }
-    a:hover { color:#fff; opacity:1; }
-    footer { position:fixed; bottom:20px; width:100%; font-size:0.85rem; opacity:0.4; }
-    .latent { display:none; }
+    body {
+      background:#000;
+      color:#fff;
+      font-family:monospace;
+      margin:4rem;
+      text-align:center;
+    }
+    h1 {
+      letter-spacing:0.05em;
+      opacity:0.85;
+      font-size:1.8rem;
+      margin-bottom:1rem;
+    }
+    #module-list a {
+      color:#888;
+      text-decoration:none;
+      margin:0 0.8rem;
+      transition:color 0.2s ease;
+    }
+    #module-list a:hover { color:#fff; }
+    footer {
+      margin-top:3rem;
+      opacity:0.4;
+      font-size:0.9rem;
+    }
   </style>
 </head>
 <body>
-  <h1>collapse geometry / modules</h1>
+  <h1>Modules</h1>
+  <div id="module-list">Loading...</div>
 
-  <div class="group">
-    <h2>M0｜宇宙本體 × collapse 幾何主群</h2>
-    <p><a href="../M0/">▸ enter M0</a></p>
-  </div>
+  <footer>© collapse geometry</footer>
 
-  <div class="group">
-    <h2>M4｜科學顯現 × Arrangement 群</h2>
-    <p><a href="../M4/">▸ enter M4</a></p>
-  </div>
+  <script>
+    async function loadModules() {
+      try {
+        const res = await fetch('./');
+        const text = await res.text();
+        const parser = new DOMParser();
+        const html = parser.parseFromString(text, 'text/html');
+        const links = [...html.querySelectorAll('a')];
+        const listDiv = document.getElementById('module-list');
+        listDiv.innerHTML = ''; // clear "Loading..."
 
-  <div class="group">
-    <h2>M7｜空間顯現 × 文明密度群</h2>
-    <p><a href="../M7/">▸ enter M7</a></p>
-  </div>
+        const moduleLinks = links.filter(a => a.getAttribute('href').endsWith('/') && !a.getAttribute('href').startsWith('../'));
+        if (moduleLinks.length === 0) {
+          listDiv.textContent = '(no modules found)';
+          return;
+        }
 
-  <!-- 潛伏模組群 -->
-  <div class="group latent"><h2>M1｜AI × 意識模組群</h2></div>
-  <div class="group latent"><h2>M2｜介面 × 語場橋接群</h2></div>
-  <div class="group latent"><h2>M3｜認知結構群</h2></div>
-  <div class="group latent"><h2>M5｜語法幾何群</h2></div>
-  <div class="group latent"><h2>M6｜出口模組群</h2></div>
-  <div class="group latent"><h2>M8｜集體顯現群</h2></div>
-  <div class="group latent"><h2>M9｜遮蔽命題群</h2></div>
-  <div class="group latent"><h2>M10｜應用顯現群</h2></div>
-
-  <footer>
-    <span>© <span id="year"></span> cgeometa / collapse geometry</span><br>
-    X · Vocus · Substack · Email
-  </footer>
-  <script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+        moduleLinks.forEach((link, i) => {
+          const name = link.getAttribute('href').replace('/', '');
+          const a = document.createElement('a');
+          a.href = name + '/';
+          a.textContent = name;
+          listDiv.appendChild(a);
+          if (i < moduleLinks.length - 1) listDiv.append(' · ');
+        });
+      } catch (err) {
+        console.error(err);
+        document.getElementById('module-list').textContent = 'Error loading modules';
+      }
+    }
+    loadModules();
+  </script>
 </body>
 </html>
